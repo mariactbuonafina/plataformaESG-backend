@@ -1,4 +1,4 @@
-# ESG Platform
+# Plataforma ESG
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18.x-green)
 ![Express](https://img.shields.io/badge/Express-4.x-blue)
@@ -9,7 +9,7 @@
 ---
 
 ## Descrição do Projeto
-A **ESG Platform** permite que empresas:
+A **Plataforma ESG** permite que empresas:
 - Respondam questionários de maturidade ESG.
 - Anexem evidências (documentos, políticas internas).
 - Recebam selo de certificação ESG (Bronze, Prata ou Ouro) baseado na pontuação obtida.
@@ -65,3 +65,34 @@ plataformaESG/
 - Docker 20.10+  
 - PostgreSQL 15 (opcional se usar Docker)  
 - Editor de código: VSCode recomendado
+
+---
+
+## Rotas Principais do Backend
+- `GET /ping` → teste da API  
+- `GET /users` → lista de usuários (mock se banco não estiver pronto)  
+- `POST /responses` → enviar respostas do questionário  
+- `POST /evidences` → enviar evidências  
+- `GET /seals/:userId` → obter selo ESG do usuário
+
+---
+
+## Docker
+- Backend e Frontend containerizados  
+- `docker-compose.yml` orquestra banco, backend e frontend  
+- Volume do Postgres persiste dados entre reinícios  
+- Comando para subir tudo:
+  ```bash
+  docker compose up --build
+
+---
+
+## 🔹 Seção: Boas Práticas
+
+```markdown
+## Boas Práticas
+- Nunca commite arquivos `.env` com senhas reais  
+- Use `package-lock.json` para manter versões consistentes  
+- Use `npm run dev` para desenvolvimento (reinício automático do servidor)  
+- Dockerize sempre que possível para padronizar ambiente  
+- Documente novas rotas e alterações no README
