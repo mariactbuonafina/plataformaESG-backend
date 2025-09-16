@@ -53,7 +53,7 @@ O projeto simula um ambiente real de desenvolvimento, com:
 ├─ frontend/ # React
 │ ├─ src/
 │ └─ Dockerfile
-├─ db/
+├─ database/
 │ └─ init/ # scripts SQL iniciais
 ├─ docker-compose.yml
 └─ .env.example
