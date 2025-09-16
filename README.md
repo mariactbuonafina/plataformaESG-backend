@@ -42,6 +42,7 @@ O projeto simula um ambiente real de desenvolvimento, com:
 ---
 
 ## Estrutura do Projeto
+
 plataformaESG/
 ├─ backend/ # API Node.js
 │ ├─ src/
@@ -90,7 +91,6 @@ plataformaESG/
 ## 🔹 Seção: Boas Práticas
 
 ```markdown
-## Boas Práticas
 - Nunca commite arquivos `.env` com senhas reais  
 - Use `package-lock.json` para manter versões consistentes  
 - Use `npm run dev` para desenvolvimento (reinício automático do servidor)  
