@@ -43,7 +43,7 @@ O projeto simula um ambiente real de desenvolvimento, com:
 
 ## Estrutura do Projeto
 
-plataformaESG/
+```plataformaESG/
 ├─ backend/ # API Node.js
 │ ├─ src/
 │ │ ├─ index.js
@@ -57,6 +57,7 @@ plataformaESG/
 │ └─ init/ # scripts SQL iniciais
 ├─ docker-compose.yml
 └─ .env.example
+```
 
 ---
 
