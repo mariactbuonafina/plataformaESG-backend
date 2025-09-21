@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
+const port = 3333;
 const db = require('./db');
+
+app.use(express.json());
 
 app.get('/ping', (req, res) => {
   res.json({ message: 'pong' });
