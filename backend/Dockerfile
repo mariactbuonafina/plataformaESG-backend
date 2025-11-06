@@ -2,16 +2,20 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY backend/package*.json ./
+# Copy package files and install dependencies inside the build context (./backend)
+COPY package*.json ./
 
-ARG NODE_ENV
+# Install all dependencies (dev dependencies kept for development convenience)
+RUN npm install
 
-RUN if [ "$NODE_ENV" = "production" ]; then npm install --omit=dev; else npm install; fi
-
-COPY backend/. .
+# Copy app sources
+COPY . .
 
 EXPOSE 3333
 
-ENV NODE_ENV $NODE_ENV
+# Default environment values
+ENV PORT=3333
+ENV NODE_ENV=development
 
-CMD ["sh", "-c", "if [ \"$NODE_ENV\" = 'production' ]; then npm start; else npm run dev; fi"]
+# Start in dev mode by default; compose can override NODE_ENV and command if desired
+CMD ["npm", "run", "dev"]
