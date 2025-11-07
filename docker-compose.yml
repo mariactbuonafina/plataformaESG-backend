@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: plataforma-esg-db
+    environment:
+      POSTGRES_USER: ${DB_USER:-esg_user}
+      POSTGRES_PASSWORD: ${DB_PASS:-esg_pass}
+      POSTGRES_DB: ${DB_NAME:-esg_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-esg_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - plataforma-esg-network
+
+  # Serviço do Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    container_name: plataforma-esg-backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3333}
+      DB_USER: ${DB_USER:-esg_user}
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-esg_db}
+      DB_PASS: ${DB_PASS:-esg_pass}
+      DB_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET:-sua-chave-secreta-super-segura-mude-em-producao}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+    ports:
+      - "${PORT:-3333}:3333"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - plataforma-esg-network
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  plataforma-esg-network:
+    driver: bridge
+

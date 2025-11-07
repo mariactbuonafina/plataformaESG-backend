@@ -70,22 +70,142 @@ O projeto simula um ambiente real de desenvolvimento, com:
 
 ---
 
-## Rotas Principais do Backend
-- `GET /ping` → teste da API  
-- `GET /users` → lista de usuários (mock se banco não estiver pronto)  
-- `POST /responses` → enviar respostas do questionário  
-- `POST /evidences` → enviar evidências  
-- `GET /seals/:userId` → obter selo ESG do usuário
+## Rotas da API
+
+### Autenticação
+- `POST /api/auth/register` - Registrar novo usuário
+- `POST /api/auth/login` - Fazer login
+- `GET /api/auth/me` - Obter informações do usuário logado (token)
+
+### Usuários
+- `GET /api/users` - Listar usuários (token)
+- `GET /api/users/:id` - Buscar usuário (token)
+- `POST /api/users` - Criar usuário (token)
+- `PUT /api/users/:id` - Atualizar usuário (token)
+- `DELETE /api/users/:id` - Deletar usuário (token)
+
+### Questionários
+- `GET /api/questionnaires` - Listar questionários
+- `GET /api/questionnaires/:id` - Buscar questionário com perguntas
+- `POST /api/questionnaires` - Criar questionário (token)
+- `POST /api/questionnaires/:id/questions` - Adicionar pergunta (token)
+
+### Respostas
+- `POST /api/responses` - Salvar respostas (token)
+- `GET /api/responses/questionnaire/:id` - Buscar respostas (token)
+- `GET /api/responses/questionnaire/:id/score` - Pontuação (token)
+
+### Evidências
+- `GET /api/evidences` - Listar evidências (token)
+- `POST /api/evidences` - Adicionar evidência (token)
+
+### Selos
+- `POST /api/seals/calculate` - Calcular selo ESG (token)
+- `GET /api/seals` - Listar selos (token)
+- `GET /api/seals/active` - Selo ativo (token)
+
+### Documentação
+- `GET /api` - Documentação completa da API
+- `GET /ping` - Health check
 
 ---
 
 ## Docker
-- Backend e Frontend containerizados  
-- `docker-compose.yml` orquestra banco, backend e frontend  
-- Volume do Postgres persiste dados entre reinícios  
-- Comando para subir tudo:
-  ```bash
-  docker compose up --build
+
+### Configuração
+
+O projeto está configurado com Docker Compose para facilitar o desenvolvimento. O `docker-compose.yml` inclui:
+- **PostgreSQL 15**: Banco de dados com volume persistente
+- **Backend**: API Node.js com hot-reload em desenvolvimento
+- **Rede Docker**: Todos os serviços na mesma rede para comunicação interna
+
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis (ou use os valores padrão):
+
+```env
+NODE_ENV=development
+PORT=3333
+
+# Configurações do Banco de Dados PostgreSQL
+DB_USER=esg_user
+DB_PASS=esg_pass
+DB_NAME=esg_db
+DB_HOST=db
+DB_PORT=5432
+```
+
+**Importante**: No Docker, o `DB_HOST` deve ser `db` (nome do serviço no docker-compose), não `localhost`.
+
+### Comandos Docker
+
+**Subir todos os serviços:**
+```bash
+docker compose up --build
+```
+
+**Subir em modo detached (background):**
+```bash
+docker compose up -d --build
+```
+
+**Ver logs:**
+```bash
+docker compose logs -f
+```
+
+**Parar os serviços:**
+```bash
+docker compose down
+```
+
+**Parar e remover volumes (limpar dados do BD):**
+```bash
+docker compose down -v
+```
+
+### Testando a Conexão
+
+Após subir os containers, você pode testar a conexão do backend com o banco:
+
+```bash
+# Entrar no container do backend
+docker exec -it plataforma-esg-backend sh
+
+# Dentro do container, testar conexão com o banco
+ping db
+```
+
+### Verificação de Saúde
+
+O docker-compose está configurado com `healthcheck` para o PostgreSQL. O backend só inicia após o banco estar saudável (`depends_on` com `condition: service_healthy`).
+
+### Testando a API
+
+Após subir os containers, você pode testar:
+
+```bash
+# Health check
+curl http://localhost:3333/ping
+
+# Documentação da API
+curl http://localhost:3333/api
+
+# Registrar usuário
+curl -X POST http://localhost:3333/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Teste","email":"teste@teste.com","password":"senha123"}'
+
+# Login (salvar o token retornado)
+curl -X POST http://localhost:3333/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"teste@teste.com","password":"senha123"}'
+```
+
+**Script de teste automático (PowerShell):**
+```powershell
+.\test-api.ps1
+```
 
 ---
 
